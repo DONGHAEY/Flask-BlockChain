@@ -18,4 +18,16 @@ class Blockchain(object) :
     def last_block(self) :
         #체인의 가장 블록을 반환
         pass
-    
+
+    #새로운 블럭을 만드는 함수이다#
+    def new_transaction(self, sender, recipient, amount) :
+        """새로운 거래는 다음으로 채굴될 블록에 포함되게 된다"""
+        """거래는 3개의 인자로 구성되어있다"""
+        """sender은 수신자, recipient는 string으로 각각 수신자와 송신자의 주소이다"""
+        """amount는 전송되는 양을 의미한다. 이 함수의 반환 값은 해당 거래가 속해질 블록의 숫자를 의미한다."""
+        self.current_transactions.append({ #dictionary 형태?
+            'sender' : sender,
+            'recipient' : recipient,
+            'amount' : amount,
+        })
+        return self.last_block['index'] + 1
