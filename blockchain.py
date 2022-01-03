@@ -15,20 +15,19 @@ class Blockchain(object) :
         #새로운 제네시스 블록 만들기##
         self.new_block(previous_hash=1, proof=100)
 
-    def new_block(self) :
+    def new_block(self, proof, previous_hash=None) :
         #새로은 블럭을 생성하고 체인에 넣는 함수
 
         """블럭체인에 들어갈 새로운 블럭을 만드는 곳"""
         """index는 블록의 번호, timestamp는 블럭이 만들어진 시간이다."""
         """transaction은 블록에 포함될 거래이다."""
         """proof는 논스값이고, previous_hash는 이전 블록의 해시값이다"""
-
         block = {
             'index':len(self.chain)+1,
-            'timestamp' : time(),
-            'transaction' : self.current_transactions,
-            'proof' : proof,
-            'previous_hash' : previous_hash or self.hash(self.chain[-1])
+            'timestamp': time(),
+            'transaction': self.current_transactions,
+            'proof': proof,
+            'previous_hash' : previous_hash or self.hash(self.chain[-1]),
         }
 
         #거래 리스트 초기화#
@@ -58,10 +57,22 @@ class Blockchain(object) :
     @staticmethod
     def hash(block):
         #블록의 해쉬함수
-        def hash(block):
-            """
-            암호화는 SHA-256을 이용한다ㅎㅎ
-            해시값을 만드는데 hash함수는 block이 입력값으로 받는다ㅎㅎ
-            """
-            block_string = json.dumps(block, sort_key=True).encode()
-            return hashlib.sha256(block_string).hexdigest()
+        """
+        암호화는 SHA-256을 이용한다ㅎㅎ
+        해시값을 만드는데 hash함수는 block이 입력값으로 받는다ㅎㅎ
+        """
+        block_string = json.dumps(block, sort_key=True).encode()
+        return hashlib.sha256(block_string).hexdigest()
+    
+    def proof_of_work(self, last_proof) :
+        proof = 0
+        while self.valid_proof(last_proof, proof) is False :
+            proof+=1
+        return proof
+
+    @staticmethod
+    def valid_proof(last_proof, proof) :
+        """작업증명 결과값을 검증하는 코드이다. hash(p, p'"값의 앞의 4자리가 0으로 이루어져 있는가를 확인 결과값은 boolean으로 조건을 만족하지 못하면 false가 반환된다."""
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
