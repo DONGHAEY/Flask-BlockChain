@@ -2,6 +2,8 @@ import hashlib
 import json
 from time import time
 
+from flask import Flask, jsonify
+from uuid import uuid4
 
 #블럭체인은 해쉬를 통하여 다같이 연결되어져있다
 #해쉬란 간단하게 말하자면, 단순히 입력값을 취하는 함수이며 입력으로부터 그 입력을 결정하는 출력 값을 생성한다
@@ -76,3 +78,30 @@ class Blockchain(object) :
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
+
+app= Flask(__name__)
+
+
+node_identifier = str(uuid4()).replace('-', '')
+
+
+blockchain = Blockchain()
+
+@app.route('/mine', methods=['GET'])
+def mine():
+    return "We will mine a newBlock"
+
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction() :
+    return "We'll add a new transaction"
+
+@app.route("/chain", methods=['GET'])
+def full_chain() :
+    response = {
+        'chain' : blockchain.chain,
+        'length' : len(blockchain.chain),
+    }
+    return jsonify(response), 200
+
+if __name__ == 'main' :
+    app.run(host='0.0.0.0', port=5000)
