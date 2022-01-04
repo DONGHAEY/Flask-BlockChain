@@ -1,8 +1,8 @@
 import hashlib
 import json
 from time import time
-
-from flask import Flask, jsonify
+from textwrap import dedent
+from flask import Flask, request, jsonify
 from uuid import uuid4
 
 #블럭체인은 해쉬를 통하여 다같이 연결되어져있다
@@ -93,6 +93,7 @@ def mine():
 
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction() :
+    values = request.get_json()
     return "We'll add a new transaction"
 
 @app.route("/chain", methods=['GET'])
